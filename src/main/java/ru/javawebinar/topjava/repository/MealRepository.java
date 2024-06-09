@@ -5,14 +5,14 @@ import ru.javawebinar.topjava.model.MealTo;
 
 import java.util.List;
 
-public interface CRUDInterface {
-    void addMeal(Meal meal);
+public interface MealRepository {
+    Meal save(Meal meal);
 
-    List<MealTo> getAll();
+    List<Meal> getAll();
 
     Meal get(int id);
 
-    void updateMeal(int id, Meal meal);
+    Meal update(int id, Meal meal);
 
-    void deleteMeal(int id);
+    void delete(int id);
 }

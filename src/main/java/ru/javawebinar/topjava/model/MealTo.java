@@ -1,15 +1,22 @@
 package ru.javawebinar.topjava.model;
 
-import lombok.*;
-
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
 public class MealTo {
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public MealTo(Integer id, LocalDateTime dateTime, String description, int calories, boolean excess) {
+        this.id = id;
+        this.dateTime = dateTime;
+        this.description = description;
+        this.calories = calories;
+        this.excess = excess;
+    }
+
+    private Integer id;
+
     private LocalDateTime dateTime;
 
     private String description;
@@ -18,4 +25,49 @@ public class MealTo {
 
     private boolean excess;
 
+    public MealTo(LocalDateTime dateTime, String description, int calories, boolean excess) {
+        this.dateTime = dateTime;
+        this.description = description;
+        this.calories = calories;
+        this.excess = excess;
+    }
+
+    public MealTo() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getCalories() {
+        return calories;
+    }
+
+    public void setCalories(int calories) {
+        this.calories = calories;
+    }
+
+    public boolean isExcess() {
+        return excess;
+    }
+
+    public void setExcess(boolean excess) {
+        this.excess = excess;
+    }
 }

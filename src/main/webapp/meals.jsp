@@ -28,10 +28,7 @@
         <th></th>
     </tr>
     <c:forEach var="meal" items="${meals}" varStatus="loop">
-        <tr class="<c:choose>
-                        <c:when test="${meal.excess}">red-text</c:when>
-                        <c:otherwise>green-text</c:otherwise>
-                   </c:choose>">
+        <tr class="${meal.excess ? 'red-text' : 'green-text'}">
             <td>${DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(meal.dateTime)}</td>
             <td>${meal.description}</td>
             <td>${meal.calories}</td>

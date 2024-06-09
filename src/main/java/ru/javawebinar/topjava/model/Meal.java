@@ -1,10 +1,5 @@
 package ru.javawebinar.topjava.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -12,16 +7,19 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+
 public class Meal {
     private LocalDateTime dateTime;
 
     private String description;
 
     private int calories;
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    private Integer id;
 
     public LocalDate getDate() {
         return dateTime.toLocalDate();
@@ -31,14 +29,41 @@ public class Meal {
         return dateTime.toLocalTime();
     }
 
-    @Getter
-    private static List<Meal> meals = Arrays.asList(
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
-    );
+    public Meal(LocalDateTime dateTime, String description, int calories) {
+        this.dateTime = dateTime;
+        this.description = description;
+        this.calories = calories;
+    }
+
+    public Meal() {
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getCalories() {
+        return calories;
+    }
+
+    public void setCalories(int calories) {
+        this.calories = calories;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
 }

@@ -23,7 +23,7 @@
     <div>
         <label>
             <label for="calories">Calories </label>
-            <input type="text" id="calories" name="calories" value="${meal.calories}">
+            <input type="number" id="calories" name="calories" value="${meal.calories}">
         </label>
         <br><br>
     </div>

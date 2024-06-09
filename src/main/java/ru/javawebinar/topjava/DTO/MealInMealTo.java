@@ -20,6 +20,7 @@ public class MealInMealTo {
 
         return meals.stream()
                 .map(meal -> new MealTo(
+                        meal.getId(),
                         meal.getDateTime(),
                         meal.getDescription(),
                         meal.getCalories(),
