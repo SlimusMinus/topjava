@@ -67,4 +67,15 @@ public class MealTo {
     public void setExcess(boolean excess) {
         this.excess = excess;
     }
+
+    @Override
+    public String toString() {
+        return "MealTo{" +
+                "id=" + id +
+                ", dateTime=" + dateTime +
+                ", description='" + description + '\'' +
+                ", calories=" + calories +
+                ", excess=" + excess +
+                '}';
+    }
 }
