@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.web;
 
+import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.InMemoryMealRepository;
 import ru.javawebinar.topjava.repository.MealRepository;
@@ -14,11 +15,18 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Objects;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class MealServlet extends HttpServlet {
+    private static final int NORMCALORIES = 2000;
+
     private MealRepository meals;
+
+    private static final Logger log = getLogger(MealServlet.class);
 
     @Override
     public void init() throws ServletException {
+        log.info("MealServlet start initialization");
         meals = new InMemoryMealRepository();
         meals.createOrUpdate(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
         meals.createOrUpdate(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000));
@@ -27,8 +35,8 @@ public class MealServlet extends HttpServlet {
         meals.createOrUpdate(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000));
         meals.createOrUpdate(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500));
         meals.createOrUpdate(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
+        log.info("in meals collection add list meals " + meals);
     }
-
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -41,10 +49,12 @@ public class MealServlet extends HttpServlet {
         String id = req.getParameter("id");
         switch (Objects.requireNonNull(action)) {
             case "delete":
+                log.warn("delete meal with id = {}", id);
                 meals.delete(Integer.parseInt(id));
                 resp.sendRedirect("meals");
                 break;
             case "edit":
+                log.info("start edit meal");
                 Meal meal;
                 if (id == null) {
                     meal = new Meal();
@@ -55,12 +65,12 @@ public class MealServlet extends HttpServlet {
                 req.getRequestDispatcher("edit.jsp").forward(req, resp);
                 break;
             default:
+                log.warn("incorrect action = {}", action);
                 showAllMeals(req, resp);
         }
     }
 
     private void showAllMeals(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        final int NORMCALORIES = 2000;
         req.setAttribute("meals", MealsUtil.mealInMealTo(meals.getAll(), NORMCALORIES));
         req.getRequestDispatcher("meals.jsp").forward(req, resp);
     }
@@ -72,11 +82,14 @@ public class MealServlet extends HttpServlet {
         String description = req.getParameter("description");
         int calories = Integer.parseInt(req.getParameter("calories"));
         String id = req.getParameter("id");
+        log.warn("doPost method started processing meal with id = {}, description = {}, calories = {}", id, description, calories);
 
         Meal newMeal;
         if (id == null || id.isEmpty()) {
+            log.info("add new meal");
             newMeal = new Meal(dateTime, description, calories);
         } else {
+            log.warn("edit meal with id = {}", id);
             newMeal = new Meal(Integer.parseInt(id), dateTime, description, calories);
         }
 

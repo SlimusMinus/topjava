@@ -6,7 +6,7 @@
 </head>
 <body>
 <jsp:include page="header.jsp"/>
-<h3>${meal.dateTime==null? "Add meal" : "Edit meal"}</h3>
+<h3>${meal.id==null? "Add meal" : "Edit meal"}</h3>
 <form method="post" action="meals">
     <div>
         <label for="date">DateTime </label>
