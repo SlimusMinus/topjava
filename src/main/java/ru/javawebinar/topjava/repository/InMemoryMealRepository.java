@@ -17,7 +17,7 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal createOrUpdate(Meal meal) {
-        if (meal.getId() == null) {
+        if (meal.getId() == 0) {
             meal.setId(getId());
             meals.put(meal.getId(), meal);
         } else {
