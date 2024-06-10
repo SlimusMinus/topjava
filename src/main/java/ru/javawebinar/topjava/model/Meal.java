@@ -3,23 +3,30 @@ package ru.javawebinar.topjava.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
-import java.util.Arrays;
-import java.util.List;
 
 
 public class Meal {
+    private Integer id;
+
     private LocalDateTime dateTime;
 
     private String description;
 
     private int calories;
 
-    public void setId(Integer id) {
-        this.id = id;
+    public Meal() {
     }
 
-    private Integer id;
+    public Meal(LocalDateTime dateTime, String description, int calories) {
+      this(null, dateTime, description, calories);
+    }
+
+    public Meal(Integer id, LocalDateTime dateTime, String description, int calories) {
+        this.id = id;
+        this.dateTime = dateTime;
+        this.description = description;
+        this.calories = calories;
+    }
 
     public LocalDate getDate() {
         return dateTime.toLocalDate();
@@ -27,15 +34,6 @@ public class Meal {
 
     public LocalTime getTime() {
         return dateTime.toLocalTime();
-    }
-
-    public Meal(LocalDateTime dateTime, String description, int calories) {
-        this.dateTime = dateTime;
-        this.description = description;
-        this.calories = calories;
-    }
-
-    public Meal() {
     }
 
     public LocalDateTime getDateTime() {
@@ -64,6 +62,10 @@ public class Meal {
 
     public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
 }

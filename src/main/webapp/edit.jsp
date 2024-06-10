@@ -27,6 +27,7 @@
         </label>
         <br><br>
     </div>
+    <input type="hidden" id="id" name="id" value="${meal.id}">
     <input type="submit" value="Save">
     <input type="button" value="Cancel" onclick="window.history.back()">
 </form>

@@ -2,45 +2,53 @@ package ru.javawebinar.topjava.repository;
 
 import ru.javawebinar.topjava.model.Meal;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class InMemoryMealRepository implements MealRepository {
 
-    private static final AtomicInteger id = new AtomicInteger(-1);
-
-    public static int getId() {
-        return id.incrementAndGet();
-    }
-
     private final List<Meal> meals = new CopyOnWriteArrayList<>();
+    private final AtomicInteger counter = new AtomicInteger(-1);
 
     @Override
-    public Meal save(Meal meal) {
-        meal.setId(getId());
-        meals.add(meal);
+    public Meal createOrUpdate(Meal meal) {
+        if (meal.getId() == null) {
+            meal.setId(getId());
+            meals.add(meal);
+        } else {
+            Meal existingMeal = meals.stream()
+                    .filter(m -> Objects.equals(m.getId(), meal.getId()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Meal not found: " + meal.getId()));
+            int index = meals.indexOf(existingMeal);
+            meals.set(index, meal);
+        }
         return meal;
+    }
+
+    private int getId() {
+        return counter.incrementAndGet();
     }
 
     @Override
     public List<Meal> getAll() {
-        return meals;
+        return new ArrayList<>(meals);
     }
 
     @Override
     public Meal get(int id) {
-        return meals.get(id);
-    }
-
-    @Override
-    public Meal update(int id, Meal meal) {
-        meals.set(id, meal);
-        return meal;
+        return meals.stream()
+                .filter(meal -> Objects.equals(meal.getId(), id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Meal not found: " + id));
     }
 
     @Override
     public void delete(int id) {
-        meals.remove(id);
+        meals.removeIf(meal -> Objects.equals(meal.getId(), id));
     }
 }
