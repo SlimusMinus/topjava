@@ -1,9 +1,8 @@
 package ru.javawebinar.topjava.web;
 
-import ru.javawebinar.topjava.DTO.MealInMealTo;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.repository.InMemoryMealRepository;
+import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.ServletException;
@@ -17,8 +16,6 @@ import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
     private MealRepository meals;
-
-    private final int NORMCALORIES =2000;
 
     @Override
     public void init() throws ServletException {
@@ -63,6 +60,7 @@ public class MealServlet extends HttpServlet {
     }
 
     private void showAllMeals(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        final int NORMCALORIES = 2000;
         req.setAttribute("meals", MealsUtil.mealInMealTo(meals.getAll(), NORMCALORIES));
         req.getRequestDispatcher("meals.jsp").forward(req, resp);
     }
