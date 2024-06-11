@@ -17,13 +17,13 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal createOrUpdate(Meal meal) {
-        if (meal.getId() == 0) {
+        if (meal.getId() == null) {
             meal.setId(getId());
             meals.put(meal.getId(), meal);
+            return meal;
         } else {
-            meals.computeIfPresent(meal.getId(), (id, existingMeal) -> meal);
+            return meals.computeIfPresent(meal.getId(), (id, existingMeal) -> meal);
         }
-        return meal;
     }
 
     private int getId() {

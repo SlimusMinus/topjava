@@ -18,11 +18,9 @@ import java.util.Objects;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealServlet extends HttpServlet {
-    private static final int NORMCALORIES = 2000;
-
-    private MealRepository meals;
-
     private static final Logger log = getLogger(MealServlet.class);
+    private static final int NORMCALORIES = 2000;
+    private MealRepository meals;
 
     @Override
     public void init() throws ServletException {
@@ -35,7 +33,7 @@ public class MealServlet extends HttpServlet {
         meals.createOrUpdate(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000));
         meals.createOrUpdate(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500));
         meals.createOrUpdate(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
-        log.info("in meals collection add list meals " + meals);
+        log.info("in meals collection add {} meals", meals.getAll().size());
     }
 
     @Override
@@ -82,14 +80,14 @@ public class MealServlet extends HttpServlet {
         String description = req.getParameter("description");
         int calories = Integer.parseInt(req.getParameter("calories"));
         String id = req.getParameter("id");
-        log.warn("doPost method started processing meal with id = {}, description = {}, calories = {}", id, description, calories);
+        log.info("doPost method started processing meal with id = {}, description = {}, calories = {}", id, description, calories);
 
         Meal newMeal;
         if (id == null || id.isEmpty()) {
             log.info("add new meal");
             newMeal = new Meal(dateTime, description, calories);
         } else {
-            log.warn("edit meal with id = {}", id);
+            log.info("edit meal with id = {}", id);
             newMeal = new Meal(Integer.parseInt(id), dateTime, description, calories);
         }
 
