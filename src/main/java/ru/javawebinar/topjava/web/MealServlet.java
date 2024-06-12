@@ -13,6 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -25,14 +28,17 @@ public class MealServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         log.info("MealServlet start initialization");
+        List<Meal> mealList = Arrays.asList(
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
+        );
         meals = new InMemoryMealRepository();
-        meals.createOrUpdate(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
-        meals.createOrUpdate(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000));
-        meals.createOrUpdate(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500));
-        meals.createOrUpdate(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100));
-        meals.createOrUpdate(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000));
-        meals.createOrUpdate(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500));
-        meals.createOrUpdate(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
+        mealList.forEach(meal -> meals.save(meal));
         log.info("in meals collection add {} meals", meals.getAll().size());
     }
 
@@ -47,7 +53,7 @@ public class MealServlet extends HttpServlet {
         String id = req.getParameter("id");
         switch (Objects.requireNonNull(action)) {
             case "delete":
-                log.warn("delete meal with id = {}", id);
+                log.info("delete meal with id = {}", id);
                 meals.delete(Integer.parseInt(id));
                 resp.sendRedirect("meals");
                 break;
@@ -63,7 +69,7 @@ public class MealServlet extends HttpServlet {
                 req.getRequestDispatcher("edit.jsp").forward(req, resp);
                 break;
             default:
-                log.warn("incorrect action = {}", action);
+                log.info("incorrect action = {}", action);
                 showAllMeals(req, resp);
         }
     }
@@ -91,7 +97,7 @@ public class MealServlet extends HttpServlet {
             newMeal = new Meal(Integer.parseInt(id), dateTime, description, calories);
         }
 
-        meals.createOrUpdate(newMeal);
+        meals.save(newMeal);
         resp.sendRedirect("meals");
     }
 }

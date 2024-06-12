@@ -5,7 +5,7 @@ import ru.javawebinar.topjava.model.Meal;
 import java.util.List;
 
 public interface MealRepository {
-    Meal createOrUpdate(Meal meal);
+    Meal save(Meal meal);
 
     List<Meal> getAll();
 

@@ -16,7 +16,7 @@ public class InMemoryMealRepository implements MealRepository {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     @Override
-    public Meal createOrUpdate(Meal meal) {
+    public Meal save(Meal meal) {
         if (meal.getId() == null) {
             meal.setId(getId());
             meals.put(meal.getId(), meal);
