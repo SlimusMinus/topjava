@@ -13,20 +13,28 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
 
-    MealRestController restController;
+    private MealRestController restController;
+    private ConfigurableApplicationContext appCtx;
 
     @Override
     public void init() {
-        try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml")) {
-            restController = appCtx.getBean("mealRestController", MealRestController.class);
-        }
+        appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        restController = appCtx.getBean("mealRestController", MealRestController.class);
+    }
+
+    @Override
+    public void destroy() {
+        appCtx.close();
+        super.destroy();
     }
 
     @Override
@@ -69,6 +77,17 @@ public class MealServlet extends HttpServlet {
                         restController.get(getId(request));
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
+                break;
+            case "filter":
+                LocalDate startDate = LocalDate.parse(request.getParameter("StartDate"));
+                LocalDate endDate = LocalDate.parse(request.getParameter("EndDate"));
+                LocalTime startTime = LocalTime.parse(request.getParameter("StartTime"));
+                LocalTime endTime = LocalTime.parse(request.getParameter("EndTime"));
+                userId = Integer.parseInt(request.getParameter("userId"));
+                request.setAttribute("meals",
+                        MealsUtil.getFilteredTos(restController.getAll(userId), MealsUtil.DEFAULT_CALORIES_PER_DAY,
+                                startDate, endDate, startTime, endTime));
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
             case "all":
             default:
