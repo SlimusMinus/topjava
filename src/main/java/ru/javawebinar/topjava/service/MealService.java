@@ -1,3 +1,4 @@
+
 package ru.javawebinar.topjava.service;
 
 import org.springframework.stereotype.Service;
@@ -20,20 +21,27 @@ public class MealService {
         this.repository = repository;
     }
 
-    public Meal create(Meal meal) {
-        return repository.save(meal);
-    }
-
-    public void delete(int id) {
-        checkNotFoundWithId(repository.delete(id), id);
-    }
-
-    public Meal get(int id) {
-        return checkNotFoundWithId(repository.get(id), id);
-    }
-
-    public List<Meal> getAll(int userId) {
+    public List<MealTo> getAll(int userId) {
         return repository.getAll(userId);
     }
 
+    public Meal get(int id, int userId) {
+        return checkNotFoundWithId(repository.get(id, userId), id);
+    }
+
+    public Meal create(Meal meal, int id) {
+        return repository.save(meal, id);
+    }
+
+    public Meal update(Meal meal, int id, int userId) {
+        return repository.update(meal, id, userId);
+    }
+
+    public void delete(int id, int userId) {
+        checkNotFoundWithId(repository.delete(id, userId), id);
+    }
+
+    public List<MealTo> getFiltered(int userId, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+        return repository.getFiltered(userId, startDate, endDate, startTime, endTime);
+    }
 }
