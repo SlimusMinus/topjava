@@ -5,6 +5,8 @@ import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -21,11 +23,14 @@ public class InMemoryMealRepository implements MealRepository {
     public Meal save(Meal meal) {
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            repository.put(meal.getId(), meal);
-            return meal;
+        } else {
+            Meal existingMeal = repository.get(meal.getId());
+            if (existingMeal == null || existingMeal.getUserId() != meal.getUserId()) {
+                return null;
+            }
         }
-        // handle case: update, but not present in storage
-        return repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
+        repository.put(meal.getId(), meal);
+        return meal;
     }
 
     @Override
@@ -39,8 +44,8 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public Collection<Meal> getAll() {
-        return repository.values();
+    public List<Meal> getAll(int userId) {
+        return repository.values().stream().filter(user -> user.getUserId() == userId).sorted(Collections.reverseOrder()).toList();
     }
 }
 
