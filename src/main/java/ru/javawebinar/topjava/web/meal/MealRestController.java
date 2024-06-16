@@ -13,7 +13,7 @@ import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 
-@Controller("/")
+@Controller
 public class MealRestController {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -32,7 +32,6 @@ public class MealRestController {
 
     public Meal create(Meal meal) {
         log.info("create {}", meal);
-        checkNew(meal);
         return service.create(meal);
     }
 

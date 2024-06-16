@@ -6,7 +6,7 @@ import ru.javawebinar.topjava.model.Meal;
 import java.util.Collection;
 import java.util.List;
 
-@Repository
+
 public interface MealRepository {
     Meal save(Meal meal);
 
