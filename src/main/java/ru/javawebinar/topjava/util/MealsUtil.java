@@ -2,6 +2,7 @@ package ru.javawebinar.topjava.util;
 
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,9 +35,12 @@ public class MealsUtil {
         return filterByPredicate(meals, caloriesPerDay, meal -> true);
     }
 
-    public static List<MealTo> getFilteredTos(int userId, int caloriesPerDay, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
-        return filterByPredicate(meals.stream().filter(meal -> meal.getUserId()==userId).collect(Collectors.toList()), caloriesPerDay, meal -> DateTimeUtil.isBetweenHalfOpenTime(meal.getTime(), startTime, endTime)
-                && DateTimeUtil.isBetweenHalfOpenDate(meal.getDate(), startDate, endDate));
+    public static List<Meal> getFilteredTos(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+        return meals.stream().
+                filter(meal -> meal.getUserId() == SecurityUtil.authUserId()
+                        && DateTimeUtil.isBetweenHalfOpenDate(meal.getDate(), startDate, endDate)
+                        && DateTimeUtil.isBetweenHalfOpenTime(meal.getTime(), startTime, endTime))
+                .collect(Collectors.toList());
     }
 
     private static List<MealTo> filterByPredicate(Collection<Meal> meals, int caloriesPerDay, Predicate<Meal> filter) {
@@ -53,6 +57,6 @@ public class MealsUtil {
     }
 
     private static MealTo createTo(Meal meal, boolean excess) {
-        return new MealTo(meal.getId(), meal.getUserId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
+        return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 }

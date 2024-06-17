@@ -14,9 +14,12 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
+
 @Controller
 public class MealRestController {
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private MealService service;
@@ -35,14 +38,16 @@ public class MealRestController {
 
     public Meal create(Meal meal) {
         final int userId = SecurityUtil.authUserId();
+        checkNew(meal);
         log.info("create meal {} for user {}", meal, userId);
         return service.create(meal, userId);
     }
 
-    public Meal update(Meal meal, int id){
+    public Meal update(Meal meal, int id) {
         final int userId = SecurityUtil.authUserId();
+        assureIdConsistent(meal, id);
         log.info("update {} by {}", meal, id);
-        return service.update(meal, id, userId);
+        return service.update(meal, userId);
     }
 
     public void delete(int id) {
@@ -54,7 +59,7 @@ public class MealRestController {
     public List<MealTo> getFiltered(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
         int userId = SecurityUtil.authUserId();
         log.info("getFiltered for user {} from {} {} to {} {}", userId, startDate, startTime, endDate, endTime);
-        return service.getFiltered(userId, startDate, endDate, startTime, endTime);
+        return service.getFiltered(startDate, endDate, startTime, endTime);
     }
 
 

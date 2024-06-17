@@ -26,7 +26,7 @@ public class MealServlet extends HttpServlet {
     @Override
     public void init() {
         appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
-        restController = appCtx.getBean("mealRestController", MealRestController.class);
+        restController = appCtx.getBean(MealRestController.class);
     }
 
     @Override
@@ -39,29 +39,24 @@ public class MealServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
         String id = request.getParameter("id");
-        String userId = request.getParameter("userId");
-
         Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
-
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")),
-                Integer.parseInt(request.getParameter("userId")));
-
+                SecurityUtil.authUserId());
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-        restController.create(meal);
+        if (id.isEmpty()) {
+            restController.create(meal);
+        } else {
+            restController.update(meal, Integer.parseInt(id));
+        }
         response.sendRedirect("meals");
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-        int userId;
-        if (request.getParameter("userId") != null) {
-            userId = Integer.parseInt(request.getParameter("userId"));
-        } else {
-            userId = 0;
-        }
+
         switch (action == null ? "all" : action) {
             case "delete":
                 int id = getId(request);
@@ -72,16 +67,16 @@ public class MealServlet extends HttpServlet {
             case "create":
             case "update":
                 final Meal meal = "create".equals(action) ?
-                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000, userId) :
+                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000, SecurityUtil.authUserId()) :
                         restController.get(getId(request));
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
             case "filter":
-                LocalDate startDate = LocalDate.parse(request.getParameter("StartDate"));
-                LocalDate endDate = LocalDate.parse(request.getParameter("EndDate"));
-                LocalTime startTime = LocalTime.parse(request.getParameter("StartTime"));
-                LocalTime endTime = LocalTime.parse(request.getParameter("EndTime"));
+                LocalDate startDate = LocalDate.parse(request.getParameter("startDate"));
+                LocalDate endDate = LocalDate.parse(request.getParameter("endDate"));
+                LocalTime startTime = LocalTime.parse(request.getParameter("startTime"));
+                LocalTime endTime = LocalTime.parse(request.getParameter("endTime"));
                 request.setAttribute("meals", restController.getFiltered(startDate, endDate, startTime, endTime));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;

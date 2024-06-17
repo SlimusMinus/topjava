@@ -53,17 +53,16 @@
     <br><br>
     <form action="meals?action=filter" method="get">
         <input type="hidden" name="action" value="filter">
-        <label for="StartDate">Start date</label>
-        <input type="date" name="StartDate" id="StartDate">
-        <label for="EndDate">End date</label>
-        <input type="date" name="EndDate" id="EndDate">
+        <label for="startDate">Start date</label>
+        <input type="date" name="startDate" id="startDate">
+        <label for="endDate">End date</label>
+        <input type="date" name="endDate" id="endDate">
         <br><br>
-        <label for="StartTime">Start time</label>
-        <input type="time" name="StartTime" id="StartTime">
-        <label for="EndTime">End time</label>
-        <input type="time" name="EndTime" id="EndTime">
+        <label for="startTime">Start time</label>
+        <input type="time" name="startTime" id="startTime">
+        <label for="endTime">End time</label>
+        <input type="time" name="endTime" id="endTime">
         <br><br>
-        <input type="hidden" name="userId" value="${meal.userId}">
         <button type="submit">Filter</button>
     </form>
 </section>
