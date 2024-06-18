@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava.model;
 
+import ru.javawebinar.topjava.web.SecurityUtil;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -13,16 +15,16 @@ public class Meal extends AbstractBaseEntity {
 
     private final int calories;
 
-    public Meal(LocalDateTime dateTime, String description, int calories, int userId) {
-        this(null, dateTime, description, calories, userId);
+    public Meal(LocalDateTime dateTime, String description, int calories) {
+        this(null, dateTime, description, calories);
     }
 
-    public Meal(Integer id, LocalDateTime dateTime, String description, int calories, int userId) {
+    public Meal(Integer id, LocalDateTime dateTime, String description, int calories) {
         super(id);
-        this.userId = userId;
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
+        this.userId = SecurityUtil.authUserId();
     }
 
     public int getUserId() {

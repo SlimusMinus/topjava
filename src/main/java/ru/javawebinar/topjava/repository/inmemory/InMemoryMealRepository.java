@@ -4,8 +4,9 @@ package ru.javawebinar.topjava.repository.inmemory;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.util.exception.NotFoundException;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,7 +30,7 @@ public class InMemoryMealRepository implements MealRepository {
     public List<Meal> getAll(int userId) {
         return repository.values().stream()
                 .filter(meal -> meal.getUserId() == userId)
-                .sorted(Comparator.comparing(Meal::getDate).reversed())
+                .sorted(Comparator.comparing(Meal::getDate).thenComparing(Meal::getTime).reversed())
                 .collect(Collectors.toList());
     }
 
@@ -45,22 +46,27 @@ public class InMemoryMealRepository implements MealRepository {
             int id = counter.incrementAndGet();
             meal.setId(id);
             repository.put(id, meal);
-            return repository.computeIfPresent(meal.getId(), (idMeal, oldUser) -> meal);
-        } else {
-            int id = meal.getId();
-            Meal existingMeal = repository.get(id);
-            if (existingMeal == null || existingMeal.getUserId() != userId) {
-                return null;
-            }
-            meal.setId(id);
-            repository.put(id, meal);
             return meal;
+        } else {
+            synchronized (this) {
+                int id = meal.getId();
+                Meal existingMeal = repository.get(id);
+                if (existingMeal == null || existingMeal.getUserId() != userId) {
+                    return null;
+                }
+                repository.put(id, meal);
+                return meal;
+            }
         }
     }
 
     @Override
     public boolean delete(int id, int userId) {
-        return repository.remove(id) != null;
+        if (userId != SecurityUtil.authUserId()) {
+            throw new NotFoundException("deletion is not possible");
+        } else {
+            return repository.remove(id) != null;
+        }
     }
 
     @Override

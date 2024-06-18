@@ -42,7 +42,6 @@
                         <%--${fn:replace(meal.dateTime, 'T', ' ')}--%>
                         ${fn:formatDateTime(meal.dateTime)}
                 </td>
-                <input type="hidden" name="id" value="${meal.id}">
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
                 <td><a href="meals?action=update&id=${meal.id}">Update</a></td>
@@ -51,17 +50,17 @@
         </c:forEach>
     </table>
     <br><br>
-    <form action="meals?action=filter" method="get">
+    <form action="meals" method="get">
         <input type="hidden" name="action" value="filter">
         <label for="startDate">Start date</label>
-        <input type="date" name="startDate" id="startDate">
+        <input type="date" name="startDate" id="startDate" value="${param.startDate}">
         <label for="endDate">End date</label>
-        <input type="date" name="endDate" id="endDate">
+        <input type="date" name="endDate" id="endDate" value="${param.endDate}">
         <br><br>
         <label for="startTime">Start time</label>
-        <input type="time" name="startTime" id="startTime">
+        <input type="time" name="startTime" id="startTime" value="${param.startTime}">
         <label for="endTime">End time</label>
-        <input type="time" name="endTime" id="endTime">
+        <input type="time" name="endTime" id="endTime" value="${param.endTime}">
         <br><br>
         <button type="submit">Filter</button>
     </form>
