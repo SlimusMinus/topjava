@@ -10,6 +10,7 @@ import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +23,12 @@ public class InMemoryMealRepository implements MealRepository {
     private final Map<Integer, Meal> repository = new ConcurrentHashMap<>();
     private final AtomicInteger counter = new AtomicInteger(0);
 
+    private final List<Meal> userMeals = new ArrayList<>( MealsUtil.mealsUser);
+    private final List<Meal> adminMeals = new ArrayList<>( MealsUtil.mealsAdmin);
+
     {
-        MealsUtil.meals.forEach(meal -> save(meal, meal.getUserId()));
+        userMeals.forEach(meal -> save(meal, 1));
+        adminMeals.forEach(meal -> save(meal, 2));
     }
 
     @Override
@@ -71,7 +76,7 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getFiltered(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
-        return MealsUtil.getFilteredTos(startDate, endDate, startTime, endTime);
+        return MealsUtil.getFilteredTos(getAll(SecurityUtil.authUserId()), startDate, endDate, startTime, endTime);
     }
 
 }

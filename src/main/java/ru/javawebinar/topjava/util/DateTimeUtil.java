@@ -9,11 +9,15 @@ public class DateTimeUtil {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public static boolean isBetweenHalfOpenTime(LocalTime mealTime, LocalTime startTime, LocalTime endTime) {
-        return !mealTime.isBefore(startTime) && mealTime.isBefore(endTime) || mealTime.equals(startTime);
+        if (endTime.isAfter(startTime)) {
+            return !mealTime.isBefore(startTime) && mealTime.isBefore(endTime);
+        } else {
+            return !mealTime.isBefore(startTime) || mealTime.isBefore(endTime);
+        }
     }
 
     public static boolean isBetweenHalfOpenDate(LocalDate mealDate, LocalDate startDate, LocalDate endDate) {
-        return !mealDate.isBefore(startDate) && mealDate.isBefore(endDate) || mealDate.isEqual(startDate);
+        return !mealDate.isBefore(startDate) && !mealDate.isAfter(endDate);
     }
 
     public static String toString(LocalDateTime ldt) {
