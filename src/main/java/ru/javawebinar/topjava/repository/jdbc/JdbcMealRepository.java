@@ -3,12 +3,10 @@ package ru.javawebinar.topjava.repository.jdbc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.Util;
-import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,10 +27,11 @@ public class JdbcMealRepository implements MealRepository {
     @Override
     public Meal save(Meal meal, int userId) {
         if (meal.isNew()) {
-            jdbcTemplate.update("INSERT INTO meals VALUES (?,?,?,?)", meal.getDateTime(), meal.getDescription(), meal.getCalories(), userId);
-        } else {
-            jdbcTemplate.update("UPDATE meals set datetime=?, description=?, calories=?, user_id=?",
+            jdbcTemplate.update("INSERT INTO meals (datetime, description, calories, user_id) VALUES (?,?,?,?)",
                     meal.getDateTime(), meal.getDescription(), meal.getCalories(), userId);
+        } else {
+            jdbcTemplate.update("UPDATE meals set datetime=?, description=?, calories=? WHERE id=?",
+                    meal.getDateTime(), meal.getDescription(), meal.getCalories(), meal.getId());
         }
         return meal;
     }
