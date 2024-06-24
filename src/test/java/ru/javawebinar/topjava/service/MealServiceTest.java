@@ -16,10 +16,17 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertThrows;
+import static ru.javawebinar.topjava.MealTestData.*;
+import static ru.javawebinar.topjava.UserTestData.NOT_FOUND;
+import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 
 @ContextConfiguration({
@@ -27,7 +34,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
         "classpath:spring/spring-db.xml"
 })
 @RunWith(SpringRunner.class)
-@Sql(scripts = "classpath:db/initDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
 
@@ -38,69 +44,82 @@ public class MealServiceTest {
     @Autowired
     private MealService service;
 
-    private final int NOT_FOUND_MEAL = 25;
-
     @Test
     public void get() {
-        final Meal mealFromDB = MealTestData.meal1;
-        assertThat(mealFromDB).isEqualTo(MealTestData.meal1);
-    }
-
-    @Test
-    public void getNotFoundMeal() {
-        assertThatThrownBy(() -> service.get(NOT_FOUND_MEAL, 100000)).isInstanceOf(NotFoundException.class);
-    }
-
-    @Test
-    public void delete() {
-        service.delete(1, 100000);
-        assertThat(6).isEqualTo(getSizeMeals());
-    }
-
-    @Test
-    public void deleteNotFoundMeal() {
-        assertThatThrownBy(() -> service.delete(NOT_FOUND_MEAL, 100000)).isInstanceOf(NotFoundException.class);
+        assertEquals(MealTestData.meal1, service.get(ID_MEAL_FROM_DB, USER_ID));
     }
 
     @Test
     public void getBetweenInclusive() {
         LocalDate start = MealTestData.meal1.getDate();
         LocalDate end = MealTestData.meal1.getDate();
-        final List<Meal> betweenInclusive = service.getBetweenInclusive(start, end, 100000);
-        assertThat(3).isEqualTo(betweenInclusive.size());
+        final List<Meal> betweenInclusive = service.getBetweenInclusive(start, end, USER_ID);
+        assertThat(SIZE_AFTER_FILTER).isEqualTo(betweenInclusive.size());
+        assertThat(betweenInclusive).containsExactlyElementsOf(ALL_MEALS_AFTER_FILTERED);
+
     }
 
     @Test
     public void getAll() {
-        assertThat(7).isEqualTo(getSizeMeals());
+        List<Meal> allMeals = service.getAll(USER_ID);
+        assertThat(allMeals).hasSize(SIZE_ALL_MEALS);
+        assertThat(allMeals).containsExactlyElementsOf(ALL_MEALS_USER);
     }
 
     @Test
     public void update() {
-        final Meal mealFromDB = MealTestData.meal1;
-        mealFromDB.setCalories(777);
-        service.update(mealFromDB, 100000);
-        assertThat(777).isEqualTo(mealFromDB.getCalories());
+        service.update(getUpdated(), USER_ID);
+        assertEquals(getUpdated(), service.get(ID_MEAL_FROM_DB, USER_ID));
+    }
+
+
+    @Test
+    public void create() {
+        final Meal newMeal = service.create(mealForSave, USER_ID);
+        Integer newId = newMeal.getId();
+        assertThat(SIZE_AFTER_CREATE).isEqualTo(getSizeMeals());
+        assertEquals(newMeal, service.get(newId, USER_ID));
     }
 
     @Test
     public void updateNotFoundMeal() {
-        assertThatThrownBy(() -> service.update(service.get(NOT_FOUND_MEAL, 100000), 100000)).isInstanceOf(NotFoundException.class);
-    }
-
-    @Test
-    public void create() {
-        service.create(MealTestData.userForSave, 100000);
-        assertThat(8).isEqualTo(getSizeMeals());
+        assertThrows(NotFoundException.class, () -> service.update(MEAL_WITH_NOT_EXiST_ID, USER_ID));
     }
 
     @Test
     public void createDuplicate() {
-        Meal duplicateMeal = new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Duplicate", 300);
-        assertThatThrownBy(() -> service.create(duplicateMeal, 100000)).isInstanceOf(DataIntegrityViolationException.class);
+        Meal duplicateMeal = new Meal(meal2.getDateTime(), "Duplicate", 300);
+        assertThrows(DataIntegrityViolationException.class, () -> service.create(duplicateMeal, USER_ID));
+    }
+
+    @Test
+    public void getNotFoundMeal() {
+        assertThrows(NotFoundException.class, () -> service.get(INCORRECT_ID_MEAL, USER_ID));
+    }
+
+    @Test
+    public void delete() {
+        service.delete(ID_MEAL_FROM_DB, USER_ID);
+        assertThat(SIZE_AFTER_DELETE).isEqualTo(getSizeMeals());
+        assertThrows(NotFoundException.class, () -> service.delete(ID_MEAL_FROM_DB, USER_ID));
+    }
+
+    @Test
+    public void getOtherUserMeal() {
+        assertThrows(NotFoundException.class, () -> service.get(ID_MEAL_FROM_DB, OTHER_USER));
+    }
+
+    @Test
+    public void deleteOtherUserMeal() {
+        assertThrows(NotFoundException.class, () -> service.delete(ID_MEAL_FROM_DB, OTHER_USER));
+    }
+
+    @Test
+    public void deleteNotFoundMeal() {
+        assertThrows(NotFoundException.class, () -> service.delete(INCORRECT_ID_MEAL, USER_ID));
     }
 
     private int getSizeMeals() {
-        return service.getAll(100000).size();
+        return service.getAll(USER_ID).size();
     }
 }
