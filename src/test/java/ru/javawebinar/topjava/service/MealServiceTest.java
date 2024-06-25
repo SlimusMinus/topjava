@@ -14,18 +14,13 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
-import static ru.javawebinar.topjava.UserTestData.NOT_FOUND;
+import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 
@@ -45,78 +40,82 @@ public class MealServiceTest {
     private MealService service;
 
     @Test
+    public void update() {
+        service.update(getUpdated(), USER_ID);
+        assertEquals(getUpdated(), service.get(ID_MEAL_1, USER_ID));
+    }
+
+    @Test
+    public void updateNotFoundMeal() {
+        assertThrows(NotFoundException.class, () -> service.update(getMealWithNotExistId(), USER_ID));
+    }
+
+    @Test
+    public void create() {
+        Meal created = service.create(getCreated(), USER_ID);
+        Integer newId = created.getId();
+        Meal newMeal = getCreated();
+        newMeal.setId(newId);
+        assertThat(newMeal).usingRecursiveComparison().isEqualTo(created);
+        assertThat(newMeal).usingRecursiveComparison().isEqualTo(service.get(newId, USER_ID));
+    }
+
+    @Test
+    public void createDuplicate() {
+        Meal duplicateMeal = new Meal(userMeal1.getDateTime(), "Duplicate", 300);
+        assertThrows(DataIntegrityViolationException.class, () -> service.create(duplicateMeal, USER_ID));
+    }
+
+    @Test
+    public void delete() {
+        service.delete(ID_MEAL_1, USER_ID);
+        assertThat(SIZE_AFTER_DELETE).isEqualTo(getSizeMeals());
+        assertThrows(NotFoundException.class, () -> service.delete(ID_MEAL_1, USER_ID));
+    }
+
+    @Test
+    public void deleteOtherUserMeal() {
+        assertThrows(NotFoundException.class, () -> service.delete(ID_MEAL_1, ADMIN_ID));
+    }
+
+    @Test
+    public void deleteNotFoundMeal() {
+        assertThrows(NotFoundException.class, () -> service.delete(NOT_FOUND, USER_ID));
+    }
+
+    @Test
     public void get() {
-        assertEquals(MealTestData.meal1, service.get(ID_MEAL_FROM_DB, USER_ID));
+        assertThat(MealTestData.userMeal1).usingRecursiveComparison().isEqualTo(service.get(ID_MEAL_1, USER_ID));
     }
 
     @Test
     public void getBetweenInclusive() {
-        LocalDate start = MealTestData.meal1.getDate();
-        LocalDate end = MealTestData.meal1.getDate();
+        LocalDate start = MealTestData.userMeal1.getDate();
+        LocalDate end = MealTestData.userMeal1.getDate();
         final List<Meal> betweenInclusive = service.getBetweenInclusive(start, end, USER_ID);
-        assertThat(SIZE_AFTER_FILTER).isEqualTo(betweenInclusive.size());
-        assertThat(betweenInclusive).containsExactlyElementsOf(ALL_MEALS_AFTER_FILTERED);
-
+        assertThat(betweenInclusive).usingRecursiveFieldByFieldElementComparator().containsExactlyElementsOf(filteredUserMeals);
     }
 
     @Test
     public void getAll() {
         List<Meal> allMeals = service.getAll(USER_ID);
-        assertThat(allMeals).hasSize(SIZE_ALL_MEALS);
-        assertThat(allMeals).containsExactlyElementsOf(ALL_MEALS_USER);
-    }
-
-    @Test
-    public void update() {
-        service.update(getUpdated(), USER_ID);
-        assertEquals(getUpdated(), service.get(ID_MEAL_FROM_DB, USER_ID));
-    }
-
-
-    @Test
-    public void create() {
-        final Meal newMeal = service.create(mealForSave, USER_ID);
-        Integer newId = newMeal.getId();
-        assertThat(SIZE_AFTER_CREATE).isEqualTo(getSizeMeals());
-        assertEquals(newMeal, service.get(newId, USER_ID));
-    }
-
-    @Test
-    public void updateNotFoundMeal() {
-        assertThrows(NotFoundException.class, () -> service.update(MEAL_WITH_NOT_EXiST_ID, USER_ID));
-    }
-
-    @Test
-    public void createDuplicate() {
-        Meal duplicateMeal = new Meal(meal2.getDateTime(), "Duplicate", 300);
-        assertThrows(DataIntegrityViolationException.class, () -> service.create(duplicateMeal, USER_ID));
+        assertThat(allMeals).usingRecursiveFieldByFieldElementComparator().containsExactlyElementsOf(allUserMeal);
     }
 
     @Test
     public void getNotFoundMeal() {
-        assertThrows(NotFoundException.class, () -> service.get(INCORRECT_ID_MEAL, USER_ID));
-    }
-
-    @Test
-    public void delete() {
-        service.delete(ID_MEAL_FROM_DB, USER_ID);
-        assertThat(SIZE_AFTER_DELETE).isEqualTo(getSizeMeals());
-        assertThrows(NotFoundException.class, () -> service.delete(ID_MEAL_FROM_DB, USER_ID));
+        assertThrows(NotFoundException.class, () -> service.get(NOT_FOUND, USER_ID));
     }
 
     @Test
     public void getOtherUserMeal() {
-        assertThrows(NotFoundException.class, () -> service.get(ID_MEAL_FROM_DB, OTHER_USER));
+        assertThrows(NotFoundException.class, () -> service.get(ID_MEAL_1, ADMIN_ID));
     }
 
     @Test
-    public void deleteOtherUserMeal() {
-        assertThrows(NotFoundException.class, () -> service.delete(ID_MEAL_FROM_DB, OTHER_USER));
-    }
-
-    @Test
-    public void deleteNotFoundMeal() {
-        assertThrows(NotFoundException.class, () -> service.delete(INCORRECT_ID_MEAL, USER_ID));
+    public void getBetweenInclusiveWithEmptyBoundaries() {
+        final List<Meal> allMeals = service.getBetweenInclusive(null, null, USER_ID);
+        assertThat(allMeals).usingRecursiveFieldByFieldElementComparator().containsExactlyElementsOf(allUserMeal);
     }
 
     private int getSizeMeals() {

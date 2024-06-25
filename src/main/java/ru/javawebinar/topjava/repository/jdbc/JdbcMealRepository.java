@@ -21,7 +21,6 @@ public class JdbcMealRepository implements MealRepository {
     private static final BeanPropertyRowMapper<Meal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Meal.class);
 
     private final JdbcTemplate jdbcTemplate;
-
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert insertMeal;
 
@@ -34,7 +33,6 @@ public class JdbcMealRepository implements MealRepository {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
-
     @Override
     public Meal save(Meal meal, int userId) {
         MapSqlParameterSource map = new MapSqlParameterSource()
@@ -44,12 +42,11 @@ public class JdbcMealRepository implements MealRepository {
                 .addValue("calories", meal.getCalories())
                 .addValue("user_id", userId);
         if (meal.isNew()) {
-
             Number newKey = insertMeal.executeAndReturnKey(map);
             meal.setId(newKey.intValue());
         } else if (namedParameterJdbcTemplate
                 .update("UPDATE meals set date_time=:date_time, description=:description, calories=:calories WHERE id=:id", map) == 0) {
-            throw new NotFoundException("Meal with {} id not found in DB");
+            return null;
         }
         return meal;
     }
