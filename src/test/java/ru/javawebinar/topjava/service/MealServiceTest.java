@@ -17,7 +17,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
@@ -42,12 +41,12 @@ public class MealServiceTest {
     @Test
     public void update() {
         service.update(getUpdated(), USER_ID);
-        assertEquals(getUpdated(), service.get(ID_MEAL_1, USER_ID));
+        assertMatchMeal(service.get(ID_MEAL_1, USER_ID), getUpdated());
     }
 
     @Test
     public void updateNotFoundMeal() {
-        assertThrows(NotFoundException.class, () -> service.update(getMealWithNotExistId(), USER_ID));
+        assertThrows(IllegalArgumentException.class, () -> service.update(getMealWithNotExistId(), USER_ID));
     }
 
     @Test
@@ -56,8 +55,8 @@ public class MealServiceTest {
         Integer newId = created.getId();
         Meal newMeal = getCreated();
         newMeal.setId(newId);
-        assertThat(newMeal).usingRecursiveComparison().isEqualTo(created);
-        assertThat(newMeal).usingRecursiveComparison().isEqualTo(service.get(newId, USER_ID));
+        assertMatchMeal(created, newMeal);
+        assertMatchMeal(service.get(newId, USER_ID), newMeal);
     }
 
     @Test
@@ -74,6 +73,11 @@ public class MealServiceTest {
     }
 
     @Test
+    public void get() {
+        assertMatchMeal(MealTestData.userMeal1, service.get(ID_MEAL_1, USER_ID));
+    }
+
+    @Test
     public void deleteOtherUserMeal() {
         assertThrows(NotFoundException.class, () -> service.delete(ID_MEAL_1, ADMIN_ID));
     }
@@ -84,22 +88,16 @@ public class MealServiceTest {
     }
 
     @Test
-    public void get() {
-        assertThat(MealTestData.userMeal1).usingRecursiveComparison().isEqualTo(service.get(ID_MEAL_1, USER_ID));
-    }
-
-    @Test
     public void getBetweenInclusive() {
         LocalDate start = MealTestData.userMeal1.getDate();
         LocalDate end = MealTestData.userMeal1.getDate();
         final List<Meal> betweenInclusive = service.getBetweenInclusive(start, end, USER_ID);
-        assertThat(betweenInclusive).usingRecursiveFieldByFieldElementComparator().containsExactlyElementsOf(filteredUserMeals);
+        assertMatchMeal(betweenInclusive, filteredUserMeals);
     }
 
     @Test
     public void getAll() {
-        List<Meal> allMeals = service.getAll(USER_ID);
-        assertThat(allMeals).usingRecursiveFieldByFieldElementComparator().containsExactlyElementsOf(allUserMeal);
+        assertMatchMeal(service.getAll(USER_ID), allUserMeals);
     }
 
     @Test
@@ -115,7 +113,7 @@ public class MealServiceTest {
     @Test
     public void getBetweenInclusiveWithEmptyBoundaries() {
         final List<Meal> allMeals = service.getBetweenInclusive(null, null, USER_ID);
-        assertThat(allMeals).usingRecursiveFieldByFieldElementComparator().containsExactlyElementsOf(allUserMeal);
+        assertMatchMeal(allMeals, allUserMeals);
     }
 
     private int getSizeMeals() {
