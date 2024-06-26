@@ -43,10 +43,10 @@ public class MealServiceTest {
         service.update(getUpdated(), USER_ID);
         assertMatch(service.get(ID_MEAL_1, USER_ID), getUpdated());
     }
+
     @Test
     public void updateOtherUserMeal() {
-        Meal updatedMeal = getUpdated();
-        updatedMeal.setId(ADMIN_ID);
+        Meal updatedMeal = getUpdatedMealAmin();
         assertThrows(NotFoundException.class, () -> service.update(updatedMeal, USER_ID));
     }
 

@@ -34,7 +34,11 @@ public class MealTestData {
     public static final List<Meal> filteredUserMeals = Arrays.asList(userMeal3, userMeal2, userMeal1);
 
     public static Meal getUpdated() {
-        return new Meal(MealTestData.userMeal1.getId(), NEW_DATE_TIME, NEW_DESCRIPTION, NEW_CALORIES);
+        return new Meal(ID_MEAL_1, NEW_DATE_TIME, NEW_DESCRIPTION, NEW_CALORIES);
+    }
+
+    public static Meal getUpdatedMealAmin(){
+        return new Meal(ID_MEAL_1+7, adminMeal1.getDateTime(), adminMeal1.getDescription(), adminMeal1.getCalories());
     }
 
     public static Meal getCreated() {
