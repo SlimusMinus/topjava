@@ -41,12 +41,18 @@ public class MealServiceTest {
     @Test
     public void update() {
         service.update(getUpdated(), USER_ID);
-        assertMatchMeal(service.get(ID_MEAL_1, USER_ID), getUpdated());
+        assertMatch(service.get(ID_MEAL_1, USER_ID), getUpdated());
+    }
+    @Test
+    public void updateOtherUserMeal() {
+        Meal updatedMeal = getUpdated();
+        updatedMeal.setId(ADMIN_ID);
+        assertThrows(NotFoundException.class, () -> service.update(updatedMeal, USER_ID));
     }
 
     @Test
     public void updateNotFoundMeal() {
-        assertThrows(IllegalArgumentException.class, () -> service.update(getMealWithNotExistId(), USER_ID));
+        assertThrows(NotFoundException.class, () -> service.update(getMealWithNotExistId(), USER_ID));
     }
 
     @Test
@@ -55,8 +61,8 @@ public class MealServiceTest {
         Integer newId = created.getId();
         Meal newMeal = getCreated();
         newMeal.setId(newId);
-        assertMatchMeal(created, newMeal);
-        assertMatchMeal(service.get(newId, USER_ID), newMeal);
+        assertMatch(created, newMeal);
+        assertMatch(service.get(newId, USER_ID), newMeal);
     }
 
     @Test
@@ -73,11 +79,6 @@ public class MealServiceTest {
     }
 
     @Test
-    public void get() {
-        assertMatchMeal(MealTestData.userMeal1, service.get(ID_MEAL_1, USER_ID));
-    }
-
-    @Test
     public void deleteOtherUserMeal() {
         assertThrows(NotFoundException.class, () -> service.delete(ID_MEAL_1, ADMIN_ID));
     }
@@ -88,16 +89,19 @@ public class MealServiceTest {
     }
 
     @Test
-    public void getBetweenInclusive() {
-        LocalDate start = MealTestData.userMeal1.getDate();
-        LocalDate end = MealTestData.userMeal1.getDate();
-        final List<Meal> betweenInclusive = service.getBetweenInclusive(start, end, USER_ID);
-        assertMatchMeal(betweenInclusive, filteredUserMeals);
+    public void get() {
+        assertMatch(service.get(ID_MEAL_1, USER_ID), MealTestData.userMeal1);
+    }
+
+    @Test
+    public void getBetweenInclusiveWithEmptyBoundaries() {
+        final List<Meal> allMeals = service.getBetweenInclusive(null, null, USER_ID);
+        assertMatch(allMeals, allUserMeals);
     }
 
     @Test
     public void getAll() {
-        assertMatchMeal(service.getAll(USER_ID), allUserMeals);
+        assertMatch(service.getAll(USER_ID), allUserMeals);
     }
 
     @Test
@@ -111,9 +115,11 @@ public class MealServiceTest {
     }
 
     @Test
-    public void getBetweenInclusiveWithEmptyBoundaries() {
-        final List<Meal> allMeals = service.getBetweenInclusive(null, null, USER_ID);
-        assertMatchMeal(allMeals, allUserMeals);
+    public void getBetweenInclusive() {
+        LocalDate start = MealTestData.userMeal1.getDate();
+        LocalDate end = MealTestData.userMeal1.getDate();
+        final List<Meal> betweenInclusive = service.getBetweenInclusive(start, end, USER_ID);
+        assertMatch(betweenInclusive, filteredUserMeals);
     }
 
     private int getSizeMeals() {

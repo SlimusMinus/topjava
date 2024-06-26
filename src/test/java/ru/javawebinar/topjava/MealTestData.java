@@ -1,7 +1,6 @@
 package ru.javawebinar.topjava;
 
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.User;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -9,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static ru.javawebinar.topjava.UserTestData.USER_ID;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 public class MealTestData {
@@ -19,7 +17,6 @@ public class MealTestData {
     public static final LocalDateTime NEW_DATE_TIME = LocalDateTime.of(2022, Month.JUNE, 25, 9, 30);
     public static final String NEW_DESCRIPTION = "Роллы";
     public static final int NEW_CALORIES = 777;
-    public static int ID = START_SEQ + 3;
 
     public static final Meal userMeal1 = new Meal(ID_MEAL_1, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500);
     public static final Meal userMeal2 = new Meal(ID_MEAL_1+1, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000);
@@ -48,11 +45,11 @@ public class MealTestData {
         return new Meal(NOT_FOUND, LocalDateTime.of(2020, Month.MAY, 18, 12, 0), "Плов", 500);
     }
 
-    public static void assertMatchMeal(Meal actual, Meal expected) {
+    public static void assertMatch(Meal actual, Meal expected) {
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
-    public static void assertMatchMeal(List<Meal> actual, List<Meal> expected) {
+    public static void assertMatch(List<Meal> actual, List<Meal> expected) {
         assertThat(actual).usingRecursiveFieldByFieldElementComparator().containsExactlyElementsOf(expected);
     }
 

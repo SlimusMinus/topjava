@@ -44,15 +44,11 @@ public class JdbcMealRepository implements MealRepository {
         if (meal.isNew()) {
             Number newKey = insertMeal.executeAndReturnKey(map);
             meal.setId(newKey.intValue());
-        } else {
-            if (!isMealBelongsToUser(meal.getId(), userId)) {
-                throw new IllegalArgumentException("Attempt to update meal not belonging to the user");
-            }
-            if (namedParameterJdbcTemplate
-                    .update("UPDATE meals set date_time=:date_time, description=:description, calories=:calories WHERE id=:id", map) == 0) {
-                return null;
-            }
+        } else if (namedParameterJdbcTemplate
+                .update("UPDATE meals set date_time=:date_time, description=:description, calories=:calories WHERE id=:id AND user_id=:user_id", map) == 0) {
+            return null;
         }
+
         return meal;
     }
 
@@ -79,12 +75,4 @@ public class JdbcMealRepository implements MealRepository {
                         ROW_MAPPER, userId, startDateTime, endDateTime);
     }
 
-    public boolean isMealBelongsToUser(int mealId, int userId) {
-        String sql = "SELECT COUNT(*) FROM meals WHERE id = :id AND user_id = :user_id";
-        MapSqlParameterSource map = new MapSqlParameterSource()
-                .addValue("id", mealId)
-                .addValue("user_id", userId);
-        Integer count = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
-        return count != null && count > 0;
-    }
 }
