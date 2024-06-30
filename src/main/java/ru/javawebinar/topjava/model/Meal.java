@@ -1,19 +1,37 @@
 package ru.javawebinar.topjava.model;
 
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+@NamedQueries({
+        @NamedQuery(name = Meal.GET_ALL, query = "SELECT m FROM Meal m WHERE m.user.id =: user_id ORDER BY m.dateTime DESC"),
+        @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal m WHERE m.id =: id"),
+        @NamedQuery(name = Meal.GET_ALL_FILTERED,
+                query = "SELECT m FROM Meal m WHERE m.user.id =: user_id AND m.dateTime >=: start_time AND m.dateTime <: end_time ORDER BY m.dateTime DESC")
+})
+@Entity
+@Table(name = "meal")
 public class Meal extends AbstractBaseEntity {
+    public static final String GET_ALL = "Meal.getAllSorted";
+    public static final String DELETE = "Meal.delete";
+    public static final String GET_ALL_FILTERED = "Meal.getAllFiltered";
+
+    @Column(name = "date_time", nullable = false)
+    @NotNull
     private LocalDateTime dateTime;
-
+    @Column(name = "description", nullable = false)
+    @NotBlank
     private String description;
-
+    @Column(name = "calories", nullable = false)
+    @NotNull
     private int calories;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     public Meal() {
