@@ -1,37 +1,47 @@
 package ru.javawebinar.topjava.model;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @NamedQueries({
+        @NamedQuery(name = Meal.GET_BY_ID, query = "SELECT m FROM Meal m WHERE m.user.id =: user_id AND m.id =: id"),
         @NamedQuery(name = Meal.GET_ALL, query = "SELECT m FROM Meal m WHERE m.user.id =: user_id ORDER BY m.dateTime DESC"),
-        @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal m WHERE m.id =: id"),
         @NamedQuery(name = Meal.GET_ALL_FILTERED,
-                query = "SELECT m FROM Meal m WHERE m.user.id =: user_id AND m.dateTime >=: start_time AND m.dateTime <: end_time ORDER BY m.dateTime DESC")
+                query = "SELECT m FROM Meal m WHERE m.user.id =: user_id AND m.dateTime >=: start_time AND m.dateTime <: end_time ORDER BY m.dateTime DESC"),
+        @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal m WHERE m.id =: id"),
+        @NamedQuery(name = Meal.UPDATE,
+                query = "UPDATE Meal m SET m.dateTime =: date_time, m.description =: description, m.calories=:calories " +
+                        "WHERE m.user.id =: user_id AND m.id =: id"),
 })
 @Entity
-@Table(name = "meal")
+@Table(name = "meal", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date_time"}, name = "meal_unique_user_datetime_idx")})
 public class Meal extends AbstractBaseEntity {
     public static final String GET_ALL = "Meal.getAllSorted";
     public static final String DELETE = "Meal.delete";
     public static final String GET_ALL_FILTERED = "Meal.getAllFiltered";
+    public static final String GET_BY_ID = "Meal.getById";
+    public static final String UPDATE = "Meal.update";
 
     @Column(name = "date_time", nullable = false)
     @NotNull
     private LocalDateTime dateTime;
+
     @Column(name = "description", nullable = false)
     @NotBlank
+    @Size (min=2, max = 120)
     private String description;
+
     @Column(name = "calories", nullable = false)
-    @NotNull
+    @Min(value = 10, message = "Calories should not be less than 10")
+    @Max(value = 5000, message = "Calories should not be greater than 5000")
     private int calories;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @NotNull
     private User user;
 
     public Meal() {

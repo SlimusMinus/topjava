@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.repository.jpa;
 
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
@@ -23,13 +22,18 @@ public class JpaMealRepository implements MealRepository {
     @Transactional
     public Meal save(Meal meal, int userId) {
         User ref = em.getReference(User.class, userId);
-        Hibernate.initialize(ref);
         meal.setUser(ref);
         if (meal.isNew()) {
             em.persist(meal);
             return meal;
         } else {
-            return em.merge(meal);
+            return em.createNamedQuery(Meal.UPDATE, Meal.class)
+                    .setParameter("date_time", meal.getDateTime())
+                    .setParameter("description", meal.getDescription())
+                    .setParameter("calories", meal.getCalories())
+                    .setParameter("user_id", userId)
+                    .setParameter("id", meal.getId())
+                    .getSingleResult();
         }
     }
 
@@ -43,22 +47,25 @@ public class JpaMealRepository implements MealRepository {
 
     @Override
     public Meal get(int id, int userId) {
-        return em.find(Meal.class, id);
+        User ref = em.getReference(User.class, userId);
+        ref.getId();
+        return  em.createNamedQuery(Meal.GET_BY_ID, Meal.class)
+                .setParameter("id", id)
+                .setParameter("user_id", userId)
+                .getSingleResult();
     }
 
     @Override
     public List<Meal> getAll(int userId) {
-        User ref = em.getReference(User.class, userId);
         return em.createNamedQuery(Meal.GET_ALL, Meal.class)
-                .setParameter("user_id", ref.getId())
+                .setParameter("user_id", userId)
                 .getResultList();
     }
 
     @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
-        User ref = em.getReference(User.class, userId);
-        return em.createNamedQuery(Meal.GET_ALL_FILTERED)
-                .setParameter("user_id", ref.getId())
+        return em.createNamedQuery(Meal.GET_ALL_FILTERED, Meal.class)
+                .setParameter("user_id",userId)
                 .setParameter("start_time", startDateTime)
                 .setParameter("end_time", endDateTime)
                 .getResultList();
