@@ -11,7 +11,7 @@ import java.time.LocalTime;
         @NamedQuery(name = Meal.GET_ALL, query = "SELECT m FROM Meal m WHERE m.user.id =: user_id ORDER BY m.dateTime DESC"),
         @NamedQuery(name = Meal.GET_ALL_FILTERED,
                 query = "SELECT m FROM Meal m WHERE m.user.id =: user_id AND m.dateTime >=: start_time AND m.dateTime <: end_time ORDER BY m.dateTime DESC"),
-        @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal m WHERE m.id =: id"),
+        @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal m WHERE m.id =: id AND m.user.id =: user_id"),
         @NamedQuery(name = Meal.UPDATE,
                 query = "UPDATE Meal m SET m.dateTime =: date_time, m.description =: description, m.calories=:calories " +
                         "WHERE m.user.id =: user_id AND m.id =: id"),
@@ -101,10 +101,10 @@ public class Meal extends AbstractBaseEntity {
     @Override
     public String toString() {
         return "Meal{" +
-                "id=" + id +
-                ", dateTime=" + dateTime +
+                "dateTime=" + dateTime +
                 ", description='" + description + '\'' +
                 ", calories=" + calories +
+                ", user=" + user +
                 '}';
     }
 }
