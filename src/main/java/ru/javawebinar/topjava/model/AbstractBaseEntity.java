@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava.model;
 
+import org.springframework.util.Assert;
+
 import javax.persistence.*;
 
 @MappedSuperclass
@@ -25,6 +27,11 @@ public abstract class AbstractBaseEntity {
     }
 
     public Integer getId() {
+        return id;
+    }
+
+    public int id() {
+        Assert.notNull(id, "Entity must have id");
         return id;
     }
 
