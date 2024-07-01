@@ -1,7 +1,11 @@
 package ru.javawebinar.topjava.model;
 
+import org.hibernate.validator.constraints.Range;
+
 import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -11,10 +15,7 @@ import java.time.LocalTime;
         @NamedQuery(name = Meal.GET_ALL, query = "SELECT m FROM Meal m WHERE m.user.id =: user_id ORDER BY m.dateTime DESC"),
         @NamedQuery(name = Meal.GET_ALL_FILTERED,
                 query = "SELECT m FROM Meal m WHERE m.user.id =: user_id AND m.dateTime >=: start_time AND m.dateTime <: end_time ORDER BY m.dateTime DESC"),
-        @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal m WHERE m.id =: id AND m.user.id =: user_id"),
-        @NamedQuery(name = Meal.UPDATE,
-                query = "UPDATE Meal m SET m.dateTime =: date_time, m.description =: description, m.calories=:calories " +
-                        "WHERE m.user.id =: user_id AND m.id =: id"),
+        @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal m WHERE m.id =: id AND m.user.id =: user_id")
 })
 @Entity
 @Table(name = "meal", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date_time"}, name = "meal_unique_user_datetime_idx")})
@@ -23,7 +24,6 @@ public class Meal extends AbstractBaseEntity {
     public static final String DELETE = "Meal.delete";
     public static final String GET_ALL_FILTERED = "Meal.getAllFiltered";
     public static final String GET_BY_ID = "Meal.getById";
-    public static final String UPDATE = "Meal.update";
 
     @Column(name = "date_time", nullable = false)
     @NotNull
@@ -31,12 +31,11 @@ public class Meal extends AbstractBaseEntity {
 
     @Column(name = "description", nullable = false)
     @NotBlank
-    @Size (min=2, max = 120)
+    @Size(min = 2, max = 120)
     private String description;
 
     @Column(name = "calories", nullable = false)
-    @Min(value = 10, message = "Calories should not be less than 10")
-    @Max(value = 5000, message = "Calories should not be greater than 5000")
+    @Range(min = 10, max = 5000, message = "Calories should be between 10 and 5000")
     private int calories;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -104,7 +103,7 @@ public class Meal extends AbstractBaseEntity {
                 "dateTime=" + dateTime +
                 ", description='" + description + '\'' +
                 ", calories=" + calories +
-                ", user=" + user +
+                ", id=" + id +
                 '}';
     }
 }
