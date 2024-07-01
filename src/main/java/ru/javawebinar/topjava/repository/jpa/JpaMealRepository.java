@@ -21,21 +21,20 @@ public class JpaMealRepository implements MealRepository {
     @Override
     @Transactional
     public Meal save(Meal meal, int userId) {
+        User user = em.getReference(User.class, userId);
         if (meal.isNew()) {
-            User user = em.getReference(User.class, userId);
             meal.setUser(user);
             em.persist(meal);
             return meal;
         } else {
-            Meal existingMeal = em.find(Meal.class, meal.getId());
-            if (existingMeal == null || existingMeal.getUser().getId() != userId) {
+            Meal existingMeal = getMeal(meal.getId(), userId);
+            if (existingMeal == null) {
                 return null;
             }
-            existingMeal.setDateTime(meal.getDateTime());
-            existingMeal.setDescription(meal.getDescription());
-            existingMeal.setCalories(meal.getCalories());
-            return meal;
+            meal.setUser(user);
+            return em.merge(meal);
         }
+
     }
 
     @Override
@@ -49,11 +48,7 @@ public class JpaMealRepository implements MealRepository {
 
     @Override
     public Meal get(int id, int userId) {
-        List<Meal> list = em.createNamedQuery(Meal.GET_BY_ID, Meal.class)
-                .setParameter("id", id)
-                .setParameter("user_id", userId)
-                .getResultList();
-        return DataAccessUtils.singleResult(list);
+        return getMeal(id, userId);
     }
 
     @Override
@@ -70,5 +65,13 @@ public class JpaMealRepository implements MealRepository {
                 .setParameter("start_time", startDateTime)
                 .setParameter("end_time", endDateTime)
                 .getResultList();
+    }
+
+    private Meal getMeal(int id, int userId) {
+        List<Meal> meals = em.createNamedQuery(Meal.GET_BY_ID, Meal.class)
+                .setParameter("id", id)
+                .setParameter("user_id", userId)
+                .getResultList();
+        return DataAccessUtils.singleResult(meals);
     }
 }
