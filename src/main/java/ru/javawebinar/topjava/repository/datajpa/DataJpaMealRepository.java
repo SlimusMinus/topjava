@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-@Profile("datajpa")
 public class DataJpaMealRepository implements MealRepository {
 
     private final CrudMealRepository crudRepository;
@@ -28,8 +27,8 @@ public class DataJpaMealRepository implements MealRepository {
     @Transactional
     public Meal save(Meal meal, int userId) {
         if (!meal.isNew()) {
-            Meal existingMeal = crudRepository.findById(Objects.requireNonNull(meal.getId())).orElse(null);
-            if (existingMeal.getUser().getId() != userId) {
+            Meal existingMeal = get(meal.id(), userId);
+            if (existingMeal == null) {
                 return null;
             }
         }
@@ -49,7 +48,7 @@ public class DataJpaMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getAll(int userId) {
-        return crudRepository.findByUserIdOrderByDateTimeDesc(userId);
+        return crudRepository.getAll(userId);
     }
 
     @Override
