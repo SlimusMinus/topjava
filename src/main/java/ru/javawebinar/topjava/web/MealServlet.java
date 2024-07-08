@@ -1,7 +1,9 @@
 package ru.javawebinar.topjava.web;
 
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.util.StringUtils;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.web.meal.MealRestController;
@@ -29,6 +31,10 @@ public class MealServlet extends HttpServlet {
     public void init() {
         springContext = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/spring-db.xml");
         mealController = springContext.getBean(MealRestController.class);
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+        applicationContext.getEnvironment().getSystemProperties().put(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, "jpa");
+        applicationContext.scan("ru.javawebinar.topjava.repository.jpa");
+        applicationContext.refresh();
     }
 
     @Override

@@ -1,24 +1,22 @@
 package ru.javawebinar.topjava.repository.datajpa;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.repository.UserRepository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Repository
+@Profile("datajpa")
 public class DataJpaMealRepository implements MealRepository {
 
     private final CrudMealRepository crudRepository;
+
     @Autowired
     private CrudUserRepository userRepository;
 
@@ -27,16 +25,15 @@ public class DataJpaMealRepository implements MealRepository {
     }
 
     @Override
+    @Transactional
     public Meal save(Meal meal, int userId) {
-        if (meal.isNew()) {
-            meal.setUser(userRepository.getReferenceById(userId));
-        } else {
-            Meal existingMeal = crudRepository.findById(meal.getId()).get();
+        if (!meal.isNew()) {
+            Meal existingMeal = crudRepository.findById(Objects.requireNonNull(meal.getId())).orElse(null);
             if (existingMeal.getUser().getId() != userId) {
                 return null;
             }
-            meal.setUser(existingMeal.getUser());
         }
+        meal.setUser(userRepository.getReferenceById(userId));
         return crudRepository.save(meal);
     }
 
@@ -57,6 +54,6 @@ public class DataJpaMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
-        return crudRepository.findByUserIdAndDateTimeBetweenOrderByDateTimeDesc(userId, startDateTime, endDateTime);
+        return crudRepository.getBetweenHalfOpen(userId, startDateTime, endDateTime);
     }
 }
