@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.web;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -72,14 +74,15 @@ public class JspMealController {
 
     @GetMapping("/mealsSort")
     public String getBetween(Model model,
-                             @RequestParam LocalDate startDate,
-                             @RequestParam LocalTime startTime,
-                             @RequestParam LocalDate endDate,
-                             @RequestParam LocalTime endTime) {
+                             @RequestParam String startDate,
+                             @RequestParam String startTime,
+                             @RequestParam String endDate,
+                             @RequestParam String endTime) {
         int userId = SecurityUtil.authUserId();
         log.info("getBetween dates({} - {}) time({} - {}) for user {}", startDate, endDate, startTime, endTime, userId);
-        List<Meal> mealsDateFiltered = service.getBetweenInclusive(startDate, endDate, userId);
-        model.addAttribute("allMeals", MealsUtil.getFilteredTos(mealsDateFiltered, SecurityUtil.authUserCaloriesPerDay(), startTime, endTime));
+        List<Meal> mealsDateFiltered = service.getBetweenInclusive(LocalDate.parse(startDate), LocalDate.parse(endDate), userId);
+        model.addAttribute("allMeals", MealsUtil.getFilteredTos(mealsDateFiltered, SecurityUtil.authUserCaloriesPerDay(),
+                LocalTime.parse(startTime), LocalTime.parse(endTime)));
         return "meals";
     }
 
