@@ -39,7 +39,10 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Before
     public void setup() {
-        Objects.requireNonNull(cacheManager.getCache("users")).clear();
+        if (jpaUtil != null){
+            Objects.requireNonNull(cacheManager.getCache("users")).clear();
+            jpaUtil.clear2ndLevelHibernateCache();
+        }
     }
 
     @Test
