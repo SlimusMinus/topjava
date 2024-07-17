@@ -4,21 +4,18 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <html>
-<head>
-    <title>Meal</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<jsp:include page="fragments/headTag.jsp"/>
+
 <body>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css"/>
+
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
-    <h3><a href="index.jsp"><spring:message code="app.home"/></a></h3>
     <hr>
     <spring:message code="meal.create" var="createMeal"/>
     <spring:message code="meal.edit" var="editMeal"/>
     <h2>${meal.id == null ? createMeal : editMeal}</h2>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
-    <form:form action="${pageContext.request.contextPath}/saveMeal" modelAttribute="meal">
+    <form:form action="${pageContext.request.contextPath}/save" modelAttribute="meal">
         <input type="hidden" name="id" value="${meal.id}">
         <dl>
             <dt><spring:message code="meal.date"/></dt>

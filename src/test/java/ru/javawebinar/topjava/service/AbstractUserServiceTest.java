@@ -2,27 +2,28 @@ package ru.javawebinar.topjava.service;
 
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataAccessException;
+import ru.javawebinar.topjava.MatcherFactory;
 import ru.javawebinar.topjava.UserTestData;
+import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.JpaUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.validation.ConstraintViolationException;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.Profiles.JDBC;
 import static ru.javawebinar.topjava.UserTestData.*;
-
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Autowired
@@ -39,8 +40,8 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Before
     public void setup() {
+        Objects.requireNonNull(cacheManager.getCache("users")).clear();
         if (jpaUtil != null){
-            Objects.requireNonNull(cacheManager.getCache("users")).clear();
             jpaUtil.clear2ndLevelHibernateCache();
         }
     }
@@ -93,7 +94,8 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     public void update() {
         User updated = getUpdated();
         service.update(updated);
-        USER_MATCHER.assertMatch(service.get(USER_ID), getUpdated());
+        List<User> allUsers = service.getAll();
+        USER_MATCHER.assertMatch(allUsers, admin, guest, updated);
     }
 
     @Test
@@ -113,11 +115,6 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     }
 
     private boolean isJdbcProfileActive() {
-        for (String profile : environment.getActiveProfiles()) {
-            if (profile.equalsIgnoreCase(JDBC)) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.asList(environment.getActiveProfiles()).contains(JDBC);
     }
 }
