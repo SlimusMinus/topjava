@@ -4,10 +4,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <html>
-
+<jsp:include page="fragments/headTag.jsp"/>
 <body>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css"/>
-
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
     <hr>
@@ -15,7 +13,7 @@
     <spring:message code="meal.edit" var="editMeal"/>
     <h2>${meal.id == null ? createMeal : editMeal}</h2>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
-    <form:form action="${pageContext.request.contextPath}/save" modelAttribute="meal">
+    <form:form action="${pageContext.request.contextPath}/meals/save" modelAttribute="meal">
         <input type="hidden" name="id" value="${meal.id}">
         <dl>
             <dt><spring:message code="meal.date"/></dt>

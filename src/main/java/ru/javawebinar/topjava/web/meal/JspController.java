@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.web.meal;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -11,11 +10,11 @@ import java.time.LocalTime;
 
 @Controller
 @RequestMapping("/meals")
-public class JspMealController extends AbstractMealController {
+public class JspController extends AbstractMealController {
 
     @GetMapping("/{id}")
     public String get(Model model, @PathVariable int id) {
-        model.addAttribute("meal", getMeal(id));
+        model.addAttribute("meal", get(id));
         return "mealForm";
     }
 
@@ -27,12 +26,12 @@ public class JspMealController extends AbstractMealController {
 
     @GetMapping
     public String getAll(Model model) {
-        model.addAttribute("allMeals", getAllMeal());
+        model.addAttribute("allMeals", getAll());
         return "meals";
     }
 
     @GetMapping("/{id}/edit")
-    public String formUpdateMeal(@PathVariable int id, Model model) {
+    public String formUpdate(@PathVariable int id, Model model) {
         int userId = getUserId();
         Meal meal = service.get(id, userId);
         model.addAttribute("meal", meal);
@@ -40,7 +39,7 @@ public class JspMealController extends AbstractMealController {
     }
 
     @RequestMapping("/add-new")
-    public String addNew(Model model) {
+    public String formAddNew(Model model) {
         model.addAttribute("meal", new Meal());
         return "mealForm";
 
@@ -49,9 +48,9 @@ public class JspMealController extends AbstractMealController {
     @RequestMapping("/save")
     public String save(@ModelAttribute("meal") Meal meal) {
         if (meal.isNew()) {
-            createMeal(meal);
+            create(meal);
         } else {
-            updateMeal(meal, getUserId());
+            update(meal, getUserId());
         }
         return "redirect:/meals";
     }
@@ -67,7 +66,7 @@ public class JspMealController extends AbstractMealController {
         LocalTime startT = (startTime == null || startTime.isEmpty()) ? LocalTime.MIN : LocalTime.parse(startTime);
         LocalDate endD = (endDate == null || endDate.isEmpty()) ? LocalDate.now() : LocalDate.parse(endDate);
         LocalTime endT = (endTime == null || endTime.isEmpty()) ? LocalTime.MAX : LocalTime.parse(endTime);
-        model.addAttribute("allMeals", getMealsBetween(startD,startT, endD, endT));
+        model.addAttribute("allMeals", getBetween(startD,startT, endD, endT));
         return "meals";
     }
 

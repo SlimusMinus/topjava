@@ -4,8 +4,7 @@
 <%@ taglib prefix="fn" uri="http://topjava.javawebinar.ru/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html>
-
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css"/>
+<jsp:include page="fragments/headTag.jsp"/>
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
@@ -33,7 +32,7 @@
         <button type="submit"><spring:message code="app.filter"/></button>
     </form>
     <hr/>
-    <input type="button" value="<spring:message code='app.add'/>" onclick="window.location.href = 'meals/add-new'">
+    <input type="button" value="<spring:message code='app.add'/>" onclick="window.location.href = '${pageContext.request.contextPath}/meals/add-new'">
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
@@ -53,7 +52,7 @@
                 <td>${meal.calories}</td>
                 <td><a href="${pageContext.request.contextPath}/meals/${meal.id}/edit"><spring:message code="meal.update"/></a></td>
                 <td>
-                    <form action="${pageContext.request.contextPath}/meals//${meal.id}" method="post"
+                    <form action="${pageContext.request.contextPath}/meals/${meal.id}" method="post"
                           style="display:inline;">
                         <input type="hidden" name="_method" value="delete"/>
                         <button type="submit"><spring:message code="meal.delete"/></button>
