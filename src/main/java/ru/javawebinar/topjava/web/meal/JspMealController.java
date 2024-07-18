@@ -5,12 +5,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.Meal;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
+import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 
 @Controller
 @RequestMapping("/meals")
-public class JspController extends AbstractMealController {
+public class JspMealController extends AbstractMealController {
 
     @GetMapping("/{id}")
     public String get(Model model, @PathVariable int id) {
@@ -57,16 +57,9 @@ public class JspController extends AbstractMealController {
 
     @GetMapping("/filter")
     public String getBetween(Model model,
-                             @RequestParam String startDate,
-                             @RequestParam String startTime,
-                             @RequestParam String endDate,
-                             @RequestParam String endTime) {
-
-        LocalDate startD = (startDate == null || startDate.isEmpty()) ? LocalDate.of(2000, 1, 1) : LocalDate.parse(startDate);
-        LocalTime startT = (startTime == null || startTime.isEmpty()) ? LocalTime.MIN : LocalTime.parse(startTime);
-        LocalDate endD = (endDate == null || endDate.isEmpty()) ? LocalDate.now() : LocalDate.parse(endDate);
-        LocalTime endT = (endTime == null || endTime.isEmpty()) ? LocalTime.MAX : LocalTime.parse(endTime);
-        model.addAttribute("allMeals", getBetween(startD,startT, endD, endT));
+                             @RequestParam String startDate, @RequestParam String startTime,
+                             @RequestParam String endDate, @RequestParam String endTime) {
+        model.addAttribute("allMeals", getBetween(parseLocalDate(startDate), parseLocalTime(startTime), parseLocalDate(endDate), parseLocalTime(endTime)));
         return "meals";
     }
 

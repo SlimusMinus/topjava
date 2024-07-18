@@ -14,8 +14,8 @@ import static ru.javawebinar.topjava.UserTestData.NOT_FOUND;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 
-public class InMemoryAdminRestControllerTest {
-    private static final Logger log = LoggerFactory.getLogger(InMemoryAdminRestControllerTest.class);
+public class InMemoryAdminMealRestControllerTest {
+    private static final Logger log = LoggerFactory.getLogger(InMemoryAdminMealRestControllerTest.class);
 
     private static ConfigurableApplicationContext appCtx;
     private static AdminRestController controller;
