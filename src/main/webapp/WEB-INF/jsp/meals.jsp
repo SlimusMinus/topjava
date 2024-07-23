@@ -11,7 +11,7 @@
     <hr/>
     <h3><spring:message code="meal.title"/></h3>
 
-    <form method="get" action="${pageContext.request.contextPath}/meals/filter">
+    <form method="get" action="meals/filter">
         <input type="hidden" name="action" value="filter">
         <dl>
             <dt><spring:message code="meal.fromDate"/></dt>
@@ -32,7 +32,7 @@
         <button type="submit"><spring:message code="app.filter"/></button>
     </form>
     <hr/>
-    <input type="button" value="<spring:message code='app.add'/>" onclick="window.location.href = '${pageContext.request.contextPath}/meals/add-new'">
+    <input type="button" value="<spring:message code='app.add'/>" onclick="window.location.href = 'meals/add-new'">
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
@@ -50,9 +50,9 @@
                 <td>${fn:formatDateTime(meal.dateTime)}</td>
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
-                <td><a href="${pageContext.request.contextPath}/meals/${meal.id}/edit"><spring:message code="meal.update"/></a></td>
+                <td><a href="meals/${meal.id}/edit"><spring:message code="meal.update"/></a></td>
                 <td>
-                    <form action="${pageContext.request.contextPath}/meals/${meal.id}" method="post"
+                    <form action="meals/${meal.id}" method="post"
                           style="display:inline;">
                         <input type="hidden" name="_method" value="delete"/>
                         <button type="submit"><spring:message code="meal.delete"/></button>

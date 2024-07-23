@@ -59,7 +59,8 @@ public class JspMealController extends AbstractMealController {
     public String getBetween(Model model,
                              @RequestParam String startDate, @RequestParam String startTime,
                              @RequestParam String endDate, @RequestParam String endTime) {
-        model.addAttribute("allMeals", getBetween(parseLocalDate(startDate), parseLocalTime(startTime), parseLocalDate(endDate), parseLocalTime(endTime)));
+        model.addAttribute("allMeals", getBetween(parseLocalDate(startDate),
+                parseLocalTime(startTime), parseLocalDate(endDate), parseLocalTime(endTime)));
         return "meals";
     }
 
