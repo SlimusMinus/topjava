@@ -12,7 +12,7 @@ import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 public class MealTestData {
     public static final MatcherFactory.Matcher<Meal> MEAL_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(Meal.class, "user");
-    public static final MatcherFactory.Matcher<MealTo> MEALTO_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(MealTo.class, "user");
+    public static final MatcherFactory.Matcher<MealTo> MEALTO_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(MealTo.class);
 
     public static final int NOT_FOUND = 10;
     public static final int MEAL1_ID = START_SEQ + 3;
@@ -28,7 +28,19 @@ public class MealTestData {
     public static final Meal adminMeal1 = new Meal(ADMIN_MEAL_ID, of(2020, Month.JANUARY, 31, 14, 0), "Админ ланч", 510);
     public static final Meal adminMeal2 = new Meal(ADMIN_MEAL_ID + 1, of(2020, Month.JANUARY, 31, 21, 0), "Админ ужин", 1500);
 
+    public static MealTo mealTo1 = createMealTo(meal1, false);
+    public static MealTo mealTo2 = createMealTo(meal2, false);
+    public static MealTo mealTo3 = createMealTo(meal3, false);
+    public static MealTo mealTo4 = createMealTo(meal4, true);
+    public static MealTo mealTo5 = createMealTo(meal5, true);
+    public static MealTo mealTo6 = createMealTo(meal6, true);
+    public static MealTo mealTo7 = createMealTo(meal7, true);
+
     public static final List<Meal> meals = List.of(meal7, meal6, meal5, meal4, meal3, meal2, meal1);
+
+    public static final List<MealTo> expectedMealsGetBetween = List.of(mealTo3, mealTo2);
+
+    public static final List<MealTo> mealsTo = List.of(mealTo7, mealTo6, mealTo5, mealTo4, mealTo3, mealTo2, mealTo1);
 
     public static Meal getNew() {
         return new Meal(null, of(2020, Month.FEBRUARY, 1, 18, 0), "Созданный ужин", 300);
@@ -36,5 +48,15 @@ public class MealTestData {
 
     public static Meal getUpdated() {
         return new Meal(MEAL1_ID, meal1.getDateTime().plus(2, ChronoUnit.MINUTES), "Обновленный завтрак", 200);
+    }
+
+    private static MealTo createMealTo(Meal meal, boolean excess){
+        return new MealTo(
+                meal.getId(),
+                meal.getDateTime(),
+                meal.getDescription(),
+                meal.getCalories(),
+                excess
+        );
     }
 }

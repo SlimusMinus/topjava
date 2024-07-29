@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.web.meal;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -9,31 +8,19 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
-import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
-import static ru.javawebinar.topjava.util.MealsUtil.DEFAULT_CALORIES_PER_DAY;
-import static ru.javawebinar.topjava.util.MealsUtil.getTos;
 
 public class MealRestControllerTest extends AbstractControllerTest {
 
     private static final String REST_URL = MealRestController.REST_URL + '/';
-
-    private List<MealTo> expectedValue;
-
-    @BeforeEach
-    void setUp() {
-        expectedValue = getTos(meals, DEFAULT_CALORIES_PER_DAY);
-    }
 
     @Autowired
     private MealService mealService;
@@ -41,9 +28,10 @@ public class MealRestControllerTest extends AbstractControllerTest {
     @Test
     void get() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + MEAL1_ID))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MEALTO_MATCHER.contentJson(expectedValue.get(6)));
+                .andExpect(MEAL_MATCHER.contentJson(meal1));
     }
 
     @Test
@@ -51,7 +39,7 @@ public class MealRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MEALTO_MATCHER.contentJson(expectedValue));
+                .andExpect(MEALTO_MATCHER.contentJson(mealsTo));
     }
 
     @Test
@@ -88,12 +76,11 @@ public class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getBetweenInclusive() throws Exception {
-        List<MealTo> expectedMeals = getTos(List.of(meal3, meal2, meal1), DEFAULT_CALORIES_PER_DAY);
         perform(MockMvcRequestBuilders.get(REST_URL + "between")
-                .param("start", "2020-01-30T00:00:00")
-                .param("end", "2020-01-30T23:59:59"))
+                .param("start", "2020-01-30T12:59:00")
+                .param("end", "2020-01-30T20:01:59"))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MEALTO_MATCHER.contentJson(expectedMeals));
+                .andExpect(MEALTO_MATCHER.contentJson(expectedMealsGetBetween));
     }
 }

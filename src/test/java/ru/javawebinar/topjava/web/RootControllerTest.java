@@ -36,13 +36,13 @@ class RootControllerTest extends AbstractControllerTest {
 
     @Test
     void getMeals() throws Exception {
-        List<MealTo> expectedValue = getTos(List.of(meal7, meal6, meal5, meal4, meal3, meal2, meal1), DEFAULT_CALORIES_PER_DAY);
+       // List<MealTo> expectedValue = getTos(List.of(meal7, meal6, meal5, meal4, meal3, meal2, meal1), DEFAULT_CALORIES_PER_DAY);
         perform(get("/meals"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("meals"))
                 .andExpect(forwardedUrl("/WEB-INF/jsp/meals.jsp"))
-                .andExpect(model().attribute("meals", expectedValue));
+                .andExpect(model().attribute("meals", mealsTo));
 
     }
 }
