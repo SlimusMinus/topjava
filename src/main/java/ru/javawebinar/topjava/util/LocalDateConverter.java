@@ -7,18 +7,23 @@ import java.time.format.DateTimeFormatter;
 
 public class LocalDateConverter implements Converter<String, LocalDate> {
 
-    private String datePattern = "yyyy-MM-dd";
+    private static final String DEFAULT_PATTERN = "yyyy-MM-dd";
 
-    public String getDatePattern() {
-        return datePattern;
+    private final DateTimeFormatter timeFormatter;
+
+    public LocalDateConverter() {
+        this(DEFAULT_PATTERN);
     }
 
-    public void setDatePattern(String datePattern) {
-        this.datePattern = datePattern;
+    public LocalDateConverter(String datePattern) {
+        this.timeFormatter = DateTimeFormatter.ofPattern(datePattern);
     }
 
     @Override
     public LocalDate convert(String source) {
-        return LocalDate.parse(source, DateTimeFormatter.ofPattern(datePattern));
+        if(source == null || source.trim().isEmpty()){
+            return null;
+        }
+        return LocalDate.parse(source, timeFormatter);
     }
 }

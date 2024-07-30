@@ -1,0 +1,153 @@
+{
+	"info": {
+		"_postman_id": "5f11b595-00f1-4518-8de9-e044d6b26164",
+		"name": "Meal API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32341590"
+	},
+	"item": [
+		{
+			"name": "Get all meals",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:28087/topjava/rest/meals",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "28087",
+					"path": [
+						"topjava",
+						"rest",
+						"meals"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get meal by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:28087/topjava/rest/meals/100009",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "28087",
+					"path": [
+						"topjava",
+						"rest",
+						"meals",
+						"100009"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete meal by id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:28087/topjava/rest/meals/100009",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "28087",
+					"path": [
+						"topjava",
+						"rest",
+						"meals",
+						"100009"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save meal",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"dateTime\": \"2020-01-30T10:12:00\",\r\n\"description\": \"Обновленный обед\",\r\n\"calories\": 600\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:28087/topjava/rest/meals",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "28087",
+					"path": [
+						"topjava",
+						"rest",
+						"meals"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get meal between date and time",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"dateTime\": \"2020-01-30T10:12:00\",\r\n\"description\": \"Обновленный обед\",\r\n\"calories\": 600\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:28087/topjava/rest/meals/between?startDate=2020-01-30&endDate=2020-01-30&startTime=11-00",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "28087",
+					"path": [
+						"topjava",
+						"rest",
+						"meals",
+						"between"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2020-01-30"
+						},
+						{
+							"key": "endDate",
+							"value": "2020-01-30"
+						},
+						{
+							"key": "startTime",
+							"value": "11-00"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
