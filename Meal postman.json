@@ -148,6 +148,37 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Update meal by id",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 100009,\r\n    \"dateTime\": \"2020-01-31T20:00:00\",\r\n    \"description\": \"овощной салат\",\r\n    \"calories\": 510\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:28087/topjava/rest/meals/100009",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "28087",
+					"path": [
+						"topjava",
+						"rest",
+						"meals",
+						"100009"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
